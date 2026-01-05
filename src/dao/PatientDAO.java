@@ -176,4 +176,11 @@ public class PatientDAO {
         return patients;
     }
 
+    public List<MedicalRecord> getMedicalHistory(int patientId) {
+        // Example query; MedicalRecord table must exist
+        String sql = "SELECT * FROM MedicalRecord WHERE patient_id=? ORDER BY record_date DESC";
+        // Use PreparedStatement similar to above
+    }
+
+
 }

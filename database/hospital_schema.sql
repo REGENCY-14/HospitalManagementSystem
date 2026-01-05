@@ -65,3 +65,21 @@ SELECT
     a.status
 FROM Appointment a
 JOIN Patient p ON a.patient_id = p.patient_id;
+
+-- Stores medical history records for patients
+CREATE TABLE MedicalRecord (
+    record_id INT PRIMARY KEY AUTO_INCREMENT,  -- Unique medical record ID
+    patient_id INT NOT NULL,                    -- Associated patient
+    doctor_id INT NOT NULL,                     -- Doctor who created the record
+    record_date DATE NOT NULL,                  -- Date of the record
+    diagnosis VARCHAR(255),                     -- Diagnosis details
+    treatment VARCHAR(255),                     -- Treatment prescribed
+    notes TEXT,                                 -- Additional notes
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp of entry
+
+    FOREIGN KEY (patient_id) REFERENCES Patient(patient_id) ON DELETE CASCADE,
+    FOREIGN KEY (doctor_id) REFERENCES Doctor(doctor_id)
+);
+
+-- Index to speed up retrieval by patient
+CREATE INDEX idx_medicalrecord_patient ON MedicalRecord(patient_id);
