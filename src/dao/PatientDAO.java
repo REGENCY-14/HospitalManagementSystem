@@ -1,5 +1,6 @@
 package dao;
 
+import model.MedicalRecord;
 import model.Patient;
 
 import java.sql.*;
@@ -177,9 +178,34 @@ public class PatientDAO {
     }
 
     public List<MedicalRecord> getMedicalHistory(int patientId) {
-        // Example query; MedicalRecord table must exist
+        List<MedicalRecord> records = new ArrayList<>();
         String sql = "SELECT * FROM MedicalRecord WHERE patient_id=? ORDER BY record_date DESC";
-        // Use PreparedStatement similar to above
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, patientId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                MedicalRecord record = new MedicalRecord(
+                        rs.getInt("record_id"),
+                        rs.getInt("patient_id"),
+                        rs.getInt("doctor_id"),
+                        rs.getDate("record_date").toLocalDate(),
+                        rs.getString("diagnosis"),
+                        rs.getString("treatment"),
+                        rs.getString("notes"),
+                        rs.getTimestamp("created_at").toLocalDateTime()
+                );
+                records.add(record);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return records;  // ✅ Must return the list
     }
 
 
