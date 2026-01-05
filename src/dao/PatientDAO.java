@@ -140,4 +140,40 @@ public class PatientDAO {
             return false;
         }
     }
+
+    // Search patients by name (first or last) using parameterized query
+    public List<Patient> searchPatientsByName(String name) {
+        List<Patient> patients = new ArrayList<>();
+        String sql = "SELECT * FROM Patient WHERE first_name LIKE ? OR last_name LIKE ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            String pattern = "%" + name + "%";
+            stmt.setString(1, pattern);
+            stmt.setString(2, pattern);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Patient patient = new Patient(
+                        rs.getInt("patient_id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getDate("date_of_birth").toLocalDate(),
+                        rs.getString("gender"),
+                        rs.getString("phone"),
+                        rs.getString("address"),
+                        rs.getString("blood_type"),
+                        rs.getTimestamp("created_at").toLocalDateTime()
+                );
+                patients.add(patient);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return patients;
+    }
+
 }
